@@ -4,6 +4,8 @@ Interactive 3D visualization of Aristotelian-Thomistic faculty psychology unifie
 
 Built with Next.js, React Three Fiber, and Three.js.
 
+<img width="1040" height="513" alt="image" src="https://github.com/user-attachments/assets/b841fb2f-c14c-43a4-9661-8823cd87ee63" />
+
 ## Development
 
 ```bash
