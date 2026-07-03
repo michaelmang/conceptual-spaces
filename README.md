@@ -24,32 +24,20 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## CI/CD
 
-- **CI** (`.github/workflows/ci.yml`) — runs lint and build on pull requests and pushes to `main`.
-- **Deploy** (`.github/workflows/deploy-vercel.yml`) — deploys to Vercel production when changes merge to `main`.
+| Step | What happens |
+|------|----------------|
+| **Pull request** | GitHub Actions runs lint + build (`.github/workflows/ci.yml`) |
+| **Merge to `main`** | Vercel deploys production automatically via the GitHub integration |
 
-### One-time setup
+Repository: [github.com/michaelmang/conceptual-spaces](https://github.com/michaelmang/conceptual-spaces)
 
-#### 1. GitHub repository
+### Branch protection (recommended)
 
-This project is intended to live in its own repository (not the home-directory git root).
+On GitHub → **Settings → Branches**, protect `main` and require the **CI** check to pass before merging. Merges to `main` then trigger a Vercel production deployment.
 
-#### 2. Vercel project + GitHub secrets
+### Vercel
 
-1. Create a project at [vercel.com/new](https://vercel.com/new) linked to the GitHub repo, **or** run locally:
-   ```bash
-   npx vercel link
-   ```
-2. Create a Vercel token: [vercel.com/account/tokens](https://vercel.com/account/tokens)
-3. Add GitHub repository secrets (**Settings → Secrets and variables → Actions**):
-   - `VERCEL_TOKEN` — [vercel.com/account/tokens](https://vercel.com/account/tokens)
-   - `VERCEL_ORG_ID` — Project **Settings → General** in Vercel (or run `npx vercel link` and check `.vercel/project.json`)
-   - `VERCEL_PROJECT_ID` — same as above
-
-**Alternative (simpler):** Enable Vercel's native GitHub integration in the Vercel dashboard. It auto-deploys on every push to `main` without the GitHub Actions deploy workflow. Keep the CI workflow for lint/build checks.
-
-#### 3. Branch protection (recommended)
-
-On GitHub, protect `main` and require the **CI** workflow to pass before merging.
+The project is linked to Vercel as `conceptual-spaces` under `michaelmangs-projects`. Preview deployments are created for pull requests; production deploys on every push to `main`.
 
 ## License
 
