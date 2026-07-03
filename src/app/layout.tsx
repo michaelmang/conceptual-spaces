@@ -12,10 +12,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Cognitive Architecture — Conceptual Spaces Visualization",
   description:
     "Interactive 3D visualization of Aristotelian-Thomistic faculty psychology unified with Gärdenfors' conceptual spaces framework",
+  openGraph: {
+    title: "Conceptual Spaces",
+    description:
+      "Interactive 3D visualization of Aristotelian-Thomistic faculty psychology unified with Gärdenfors' conceptual spaces framework",
+    type: "website",
+    siteName: "Conceptual Spaces",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Conceptual Spaces",
+    description:
+      "Interactive 3D visualization of cognitive architecture and conceptual spaces",
+  },
 };
 
 export default function RootLayout({
