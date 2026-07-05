@@ -8,13 +8,31 @@ import {
 export type LayerZoneId = keyof typeof LAYER_ZONES;
 
 export type SceneFocus =
+  | { kind: "overview" }
   | { kind: "layer"; id: LayerZoneId }
   | { kind: "faculty"; id: FacultyId };
 
 /** Pipeline order for guided faculty tour */
 export const FACULTY_TOUR_ORDER = PIPELINE_STATIONS.map((s) => s.id as FacultyId);
 
-export const FACULTY_TOUR_STEP_MS = 5500;
+/** URL form: "overview", "layer:middle", "faculty:intellect" */
+export function serializeFocus(focus: SceneFocus): string {
+  if (focus.kind === "overview") return "overview";
+  return `${focus.kind}:${focus.id}`;
+}
+
+export function parseFocus(value: string | null): SceneFocus | null {
+  if (!value) return null;
+  if (value === "overview") return { kind: "overview" };
+  const [kind, id] = value.split(":");
+  if (kind === "layer" && id in LAYER_ZONES) {
+    return { kind: "layer", id: id as LayerZoneId };
+  }
+  if (kind === "faculty" && FACULTIES.some((f) => f.id === id)) {
+    return { kind: "faculty", id: id as FacultyId };
+  }
+  return null;
+}
 
 export interface CameraFrame {
   position: [number, number, number];
@@ -26,6 +44,12 @@ function layerCenterY(id: LayerZoneId): number {
   return (zone.min + zone.max) / 2;
 }
 
+/** Frames the whole three-layer tower (reality at y≈-7 up to intellect at y≈7) */
+const OVERVIEW_FRAME: CameraFrame = {
+  target: [0, 0.1, 0],
+  position: [4, 1.6, 19],
+};
+
 const LAYER_FRAMES: Record<LayerZoneId, CameraFrame> = {
   below: {
     target: [0, layerCenterY("below"), 0],
@@ -33,11 +57,11 @@ const LAYER_FRAMES: Record<LayerZoneId, CameraFrame> = {
   },
   middle: {
     target: [0, layerCenterY("middle"), 0],
-    position: [0, 2.2, 12],
+    position: [0, 3.6, 12],
   },
   above: {
     target: [0, layerCenterY("above"), 0],
-    position: [0, 6.8, 9.5],
+    position: [4.5, 9.5, 8],
   },
 };
 
@@ -63,8 +87,8 @@ const FACULTY_FRAMES: Partial<Record<FacultyId, CameraFrame>> = {
     position: [-1.2, 2.4, 9.5],
   },
   "conceptual-space": {
-    target: [0, 1.2, 0],
-    position: [0, 2.8, 9],
+    target: [0, 0.9, -0.5],
+    position: [0, 5.8, 8.6],
   },
   memory: {
     target: [4.2, 0.8, 0],
@@ -72,11 +96,14 @@ const FACULTY_FRAMES: Partial<Record<FacultyId, CameraFrame>> = {
   },
   intellect: {
     target: [0, 5.5, 0],
-    position: [0, 7.2, 9],
+    position: [5.5, 10.5, 7],
   },
 };
 
 export function getCameraFrame(focus: SceneFocus): CameraFrame {
+  if (focus.kind === "overview") {
+    return OVERVIEW_FRAME;
+  }
   if (focus.kind === "layer") {
     return LAYER_FRAMES[focus.id];
   }
@@ -101,6 +128,14 @@ export interface FocusAnchor {
 }
 
 export function getFocusAnchor(focus: SceneFocus): FocusAnchor {
+  if (focus.kind === "overview") {
+    return {
+      position: [0, 0.1, 0],
+      color: "#ffffff",
+      scale: 1.6,
+      label: "Overview",
+    };
+  }
   if (focus.kind === "layer") {
     const zone = LAYER_ZONES[focus.id];
     const layerScale = focus.id === "middle" ? 1.5 : focus.id === "below" ? 1.25 : 1.2;

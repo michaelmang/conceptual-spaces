@@ -10,7 +10,7 @@ export function CameraControlBar({
   onModeChange: (mode: CameraControlMode) => void;
 }) {
   return (
-    <div className="pointer-events-none absolute bottom-4 left-4 z-10 flex flex-col gap-2">
+    <div className="pointer-events-none absolute bottom-4 left-4 z-10 hidden flex-col gap-2 sm:flex">
       <div className="pointer-events-auto flex items-center gap-1 rounded-lg border border-white/10 bg-black/70 p-1 backdrop-blur-md">
         <ControlButton
           active={mode === "orbit"}

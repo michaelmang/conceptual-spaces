@@ -10,6 +10,7 @@ import {
   PIPELINE_STATIONS,
 } from "@/lib/cognitive-model";
 import { AnnotationLabel } from "./AnnotationLabel";
+import { FlowArrow } from "./FlowArrow";
 import { SegmentLine } from "./SegmentLine";
 
 const { x: CX, y: CY, z: CZ } = LAYOUT.cogitative;
@@ -85,6 +86,17 @@ export function CogitativeZone() {
         </group>
       ))}
 
+      {/* De Haan's sequence: each percept depends on the previous (p. 21) */}
+      {PERCEPT_TYPES.slice(0, -1).map((p, i) => (
+        <FlowArrow
+          key={`chain-${p.id}`}
+          start={p.offset}
+          end={PERCEPT_TYPES[i + 1].offset}
+          color={PERCEPT_TYPES[i + 1].color}
+          opacity={0.55}
+        />
+      ))}
+
       <mesh ref={gestaltRef} position={[0, -0.1, 0]}>
         <icosahedronGeometry args={[0.3, 1]} />
         <meshStandardMaterial
@@ -139,7 +151,7 @@ export function MemoryZone() {
       </mesh>
 
       <AnnotationLabel
-        position={[0, 1.85, -1.1]}
+        position={[0, 1.35, -1.1]}
         step={station.step}
         title={station.label}
         subtitle={station.subtitle}

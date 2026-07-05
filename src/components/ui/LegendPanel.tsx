@@ -45,6 +45,24 @@ export function LegendPanel({
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 py-4">
+        {/* Overview */}
+        <section className="mb-4">
+          <button
+            type="button"
+            onClick={() => onFocusChange({ kind: "overview" })}
+            className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${
+              focus.kind === "overview"
+                ? "border-white/20 bg-white/10 ring-1 ring-white/20"
+                : "border-white/5 bg-white/[0.03] hover:bg-white/[0.06]"
+            }`}
+          >
+            <p className="text-sm text-white/90">⌂ Overview</p>
+            <p className="mt-0.5 text-xs text-white/40">
+              Frame the whole three-layer architecture at once
+            </p>
+          </button>
+        </section>
+
         {/* Layer zones */}
         <section className="mb-6">
           <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/40">
@@ -93,10 +111,10 @@ export function LegendPanel({
           </ol>
         </section>
 
-        {/* Faculties */}
+        {/* Stations */}
         <section className="mb-6">
           <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/40">
-            Faculties
+            Stations
           </h2>
           <div className="space-y-1">
             {FACULTIES.map((f) => (
@@ -118,6 +136,12 @@ export function LegendPanel({
                   <span className="text-sm font-medium text-white">{f.label}</span>
                 </div>
                 <p className="mt-0.5 pl-4 text-xs text-white/40">{f.subtitle}</p>
+                {f.id === "conceptual-space" && (
+                  <p className="mt-0.5 pl-4 text-[10px] italic text-[#4a9eff]/70">
+                    A representation, not a faculty — the cogitative phantasm,
+                    organized geometrically
+                  </p>
+                )}
               </button>
             ))}
           </div>
@@ -157,7 +181,7 @@ export function LegendPanel({
                 style={{ borderLeftColor: p.color, borderLeftWidth: 3 }}
               >
                 <p className="text-sm font-medium text-white">{p.label}</p>
-                <p className="text-xs italic text-white/40">&ldquo;{p.example}&rdquo;</p>
+                <p className="text-xs italic text-white/40">{p.example}</p>
               </div>
             ))}
           </div>

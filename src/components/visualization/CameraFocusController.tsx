@@ -8,7 +8,10 @@ import { getCameraFrame, type CameraFrame, type SceneFocus } from "@/lib/camera-
 
 const LERP = 0.09;
 const SNAP_EPSILON = 0.04;
-const ORBIT_SPEED = 0.42;
+/* Sway around the preset azimuth instead of orbiting fully — labels face the
+   camera only from the front, so a full orbit would show them mirrored */
+const SWAY_SPEED = 0.35;
+const SWAY_AMPLITUDE = 0.22;
 
 function beginOrbitFromFrame(
   frame: CameraFrame,
@@ -31,12 +34,13 @@ function applyOrbit(
   camera: THREE.Camera,
   controls: OrbitControlsImpl,
   center: THREE.Vector3,
-  orbit: { radius: number; height: number; angle: number },
+  orbit: { radius: number; height: number },
+  angle: number,
 ) {
   camera.position.set(
-    center.x + Math.sin(orbit.angle) * orbit.radius,
+    center.x + Math.sin(angle) * orbit.radius,
     center.y + orbit.height,
-    center.z + Math.cos(orbit.angle) * orbit.radius,
+    center.z + Math.cos(angle) * orbit.radius,
   );
   controls.target.copy(center);
   controls.update();
@@ -57,11 +61,13 @@ export function CameraFocusController({
   const animating = useRef(false);
   const orbitCenter = useRef(new THREE.Vector3());
   const orbit = useRef({ radius: 8, height: 2, angle: 0 });
+  const swayTime = useRef(0);
   const orbitActive = useRef(false);
   const currentFrame = useRef<CameraFrame>(getCameraFrame(focus));
 
   const startOrbit = () => {
     beginOrbitFromFrame(currentFrame.current, orbitCenter.current, orbit.current);
+    swayTime.current = 0;
     orbitActive.current = true;
   };
 
@@ -107,8 +113,10 @@ export function CameraFocusController({
 
     if (!tourOrbiting || !orbitActive.current) return;
 
-    orbit.current.angle += delta * ORBIT_SPEED;
-    applyOrbit(camera, controls, orbitCenter.current, orbit.current);
+    swayTime.current += delta;
+    const angle =
+      orbit.current.angle + Math.sin(swayTime.current * SWAY_SPEED) * SWAY_AMPLITUDE;
+    applyOrbit(camera, controls, orbitCenter.current, orbit.current, angle);
   });
 
   return null;

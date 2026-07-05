@@ -102,7 +102,12 @@ export function ActiveFocusIndicator({
 
       <mesh ref={beamRef} position={[0, anchor.scale * 0.75, 0]}>
         <cylinderGeometry args={[1, 1, 1, 12]} />
-        <meshBasicMaterial color={anchor.color} transparent opacity={0.1} />
+        <meshBasicMaterial
+          color={anchor.color}
+          transparent
+          opacity={0.1}
+          depthWrite={false}
+        />
       </mesh>
 
       <mesh ref={coreRef}>

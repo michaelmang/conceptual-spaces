@@ -8,6 +8,7 @@ import { TYPICALITY_SPACE, typicalityScore } from "@/lib/gardenfors-figures";
 import { LAYOUT, PIPELINE_STATIONS } from "@/lib/cognitive-model";
 import { AnnotationLabel } from "./AnnotationLabel";
 import { SegmentLine } from "./SegmentLine";
+import { ConceptRegionsPlane } from "./ConceptRegionsPlane";
 
 const { x: PX, y: PY, z: PZ } = LAYOUT.conceptual;
 const { rx, ry, rz, concept, prototypeLabel, instances } = TYPICALITY_SPACE;
@@ -152,18 +153,23 @@ export function ConceptualSpaceLayer() {
   return (
     <group position={[PX, PY, PZ]}>
       <AnnotationLabel
-        position={[0, 2.2, 1.85]}
+        position={[0, 1.35, 0.3]}
         step={station.step}
         title={station.label}
-        subtitle="3D convex region · prototype · typicality gradient"
+        subtitle="The cogitative phantasm, organized geometrically"
         color={station.color}
         fontSize={0.14}
       />
 
       <TypicalityFigure />
 
+      {/* Genus/species regions flat on the middle platform below the ellipsoid */}
+      <group position={[0, -0.94, 0]}>
+        <ConceptRegionsPlane />
+      </group>
+
       <AnnotationLabel
-        position={[0, -0.95, 1.55]}
+        position={[-2.0, 0.45, 0.6]}
         title="Distance from prototype"
         subtitle="Closer to the core = more typical member"
         color="#ffffff"

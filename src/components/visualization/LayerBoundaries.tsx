@@ -1,9 +1,29 @@
 "use client";
 
-import * as THREE from "three";
-import { Text } from "@react-three/drei";
+import { Line, Text } from "@react-three/drei";
 import { LAYER_ZONES } from "@/lib/cognitive-model";
 import { LayerPlatform } from "./LayerPlatform";
+
+/**
+ * The paper's thesis: Gärdenfors' framework leaves a gap below (how geometry
+ * connects to reality) and above (necessity beyond typicality) — and the
+ * Aristotelian account fills both. So each seam is a dashed "gap" line with a
+ * glowing bridge ring where the cognitive flow crosses it.
+ */
+const GAP_SEAMS = [
+  {
+    y: -2.5,
+    gap: "Gap below Gärdenfors' framework",
+    fill: "Filled by formal reception in the senses",
+    color: "#6ecf8a",
+  },
+  {
+    y: 2.8,
+    gap: "Gap above Gärdenfors' framework",
+    fill: "Filled by the immaterial intellect",
+    color: "#e8c547",
+  },
+];
 
 export function LayerBoundaries() {
   return (
@@ -36,25 +56,57 @@ export function LayerBoundaries() {
         labelPlacement="front-right"
       />
 
-      {/* Gap markers — dashed horizontal bands */}
-      {[
-        { y: -2.5, label: "Gap Below: sensory grounding of geometry" },
-        { y: 2.8, label: "Gap Above: necessity beyond typicality" },
-      ].map((gap) => (
-        <group key={gap.y} position={[0, gap.y, 0]}>
-          <mesh rotation={[-Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[12.5, 0.06]} />
-            <meshBasicMaterial color="#ff6b6b" transparent opacity={0.5} side={THREE.DoubleSide} />
-          </mesh>
-          <Text
-            position={[6.4, 0.15, 0]}
-            fontSize={0.11}
+      {/* Gap seams — dashed gap line, bridged where the flow crosses */}
+      {GAP_SEAMS.map((seam) => (
+        <group key={seam.y} position={[0, seam.y, 0]}>
+          <Line
+            points={[
+              [-6.25, 0, 0],
+              [6.25, 0, 0],
+            ]}
             color="#ff6b6b"
+            lineWidth={1}
+            dashed
+            dashSize={0.2}
+            gapSize={0.14}
+            transparent
+            opacity={0.3}
+          />
+
+          {/* Bridge ring the flow particles pass through at x=0 */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.5, 0.035, 12, 48]} />
+            <meshStandardMaterial
+              color={seam.color}
+              emissive={seam.color}
+              emissiveIntensity={0.6}
+              transparent
+              opacity={0.85}
+            />
+          </mesh>
+
+          <Text
+            position={[2.4, 0.34, 0]}
+            fontSize={0.08}
+            color="#ff9b9b"
+            fillOpacity={0.6}
             anchorX="left"
             anchorY="middle"
-            maxWidth={3}
+            outlineWidth={0.012}
+            outlineColor="#000000"
           >
-            {gap.label}
+            {seam.gap}
+          </Text>
+          <Text
+            position={[2.4, 0.16, 0]}
+            fontSize={0.1}
+            color={seam.color}
+            anchorX="left"
+            anchorY="middle"
+            outlineWidth={0.015}
+            outlineColor="#000000"
+          >
+            {seam.fill}
           </Text>
         </group>
       ))}

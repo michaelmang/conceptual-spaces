@@ -44,6 +44,8 @@ export const TYPICALITY_LEGEND = {
     "Convex ellipsoid = category (e.g. BIRD)",
     "Prototype = most typical member at the core",
     "Near center → robin-like; toward the shell → penguin-like",
-    "Nested property regions inherit graded typicality (d₁, d₂)",
+    "On the plane below: BIRD nests beside MAMMAL inside ANIMAL — genus ⊃ species as convex regions",
+    "Diagnosticity: d₁ ÷ d₂ — Robin's distance into BIRD vs into ANIMAL",
+    "Behind: the Porphyry tree, Aristotle's discrete counterpart, linked node-to-region",
   ],
 } as const;

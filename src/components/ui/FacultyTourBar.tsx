@@ -8,31 +8,42 @@ import {
 
 export function FacultyTourBar({
   focus,
-  playing,
   onTogglePlay,
+  onOverview,
 }: {
   focus: SceneFocus;
-  playing: boolean;
   onTogglePlay: () => void;
+  onOverview: () => void;
 }) {
-  const facultyIndex =
-    focus.kind === "faculty" ? FACULTY_TOUR_ORDER.indexOf(focus.id) : -1;
+  const facultyId = focus.kind === "faculty" ? focus.id : undefined;
+  const facultyIndex = facultyId ? FACULTY_TOUR_ORDER.indexOf(facultyId) : -1;
   const faculty =
-    facultyIndex >= 0 ? FACULTIES.find((f) => f.id === focus.id) : undefined;
+    facultyIndex >= 0 ? FACULTIES.find((f) => f.id === facultyId) : undefined;
 
   return (
     <div className="pointer-events-none absolute bottom-4 right-4 z-10 flex flex-col items-end gap-2">
       <div className="pointer-events-auto flex items-center gap-2 rounded-lg border border-white/10 bg-black/70 p-1.5 backdrop-blur-md">
         <button
           type="button"
+          onClick={onOverview}
+          title="Zoom out to frame all three layers"
+          className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            focus.kind === "overview"
+              ? "bg-white/15 text-white"
+              : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+          }`}
+        >
+          <span aria-hidden className="text-sm leading-none">⌂</span>
+          Overview
+        </button>
+        <button
+          type="button"
           onClick={onTogglePlay}
-          title={playing ? "Pause faculty tour" : "Play faculty tour"}
+          title="Play the narrated walkthrough of the whole architecture"
           className="flex items-center gap-2 rounded-md bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15"
         >
-          <span aria-hidden className="text-sm leading-none">
-            {playing ? "⏸" : "▶"}
-          </span>
-          {playing ? "Pause tour" : "Play tour"}
+          <span aria-hidden className="text-sm leading-none">▶</span>
+          Story
         </button>
         {faculty && (
           <div className="hidden border-l border-white/10 pl-2 sm:block">
@@ -43,11 +54,6 @@ export function FacultyTourBar({
           </div>
         )}
       </div>
-      {playing && (
-        <p className="rounded-lg bg-black/50 px-3 py-1.5 text-[11px] text-white/50 backdrop-blur-sm">
-          Walking through each faculty · camera orbits each stop
-        </p>
-      )}
     </div>
   );
 }

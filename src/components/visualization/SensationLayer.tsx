@@ -103,7 +103,16 @@ export function SensationLayer() {
         />
       </group>
 
-      <FlowArrow start={reality.position} end={senseNodes[0].position} color="#c45c26" opacity={0.3} />
+      {/* Formal reception happens in all five senses, not just sight */}
+      {senseNodes.map((s) => (
+        <FlowArrow
+          key={`reality-${s.id}`}
+          start={reality.position}
+          end={s.position}
+          color="#c45c26"
+          opacity={0.18}
+        />
+      ))}
 
       <AnnotationLabel
         position={[-3.8, SENSE_RING.y + 0.7, 2.2]}
@@ -166,11 +175,13 @@ export function SensationLayer() {
           <meshStandardMaterial color="#5b8a72" transparent opacity={0.2} wireframe />
         </mesh>
         <AnnotationLabel
-          position={[0, 1.15, 0]}
+          position={[0.55, -0.4, 0]}
           step={imagination.step}
           title={imagination.label}
           subtitle={imagination.subtitle}
           color={imagination.color}
+          fontSize={0.15}
+          anchorX="left"
           subtitleGap={1.8}
         />
       </group>

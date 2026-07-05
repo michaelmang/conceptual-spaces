@@ -4,11 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { LegendPanel } from "@/components/ui/LegendPanel";
 import { FacultyTourBar } from "@/components/ui/FacultyTourBar";
+import { StoryCaption } from "@/components/ui/StoryCaption";
+import { MobileInfoSheet } from "@/components/ui/MobileInfoSheet";
 import {
-  FACULTY_TOUR_ORDER,
-  FACULTY_TOUR_STEP_MS,
+  parseFocus,
+  serializeFocus,
   type SceneFocus,
 } from "@/lib/camera-focus";
+import { STORY_STEPS, STORY_STEP_MS } from "@/lib/story";
 
 const CognitiveScene = dynamic(
   () =>
@@ -24,51 +27,78 @@ const CognitiveScene = dynamic(
 );
 
 export default function Home() {
-  const [focus, setFocus] = useState<SceneFocus>({
-    kind: "faculty",
-    id: "cogitative",
-  });
-  const [tourPlaying, setTourPlaying] = useState(false);
+  const [focus, setFocus] = useState<SceneFocus>({ kind: "overview" });
+  const [storyIndex, setStoryIndex] = useState<number | null>(null);
+  const [storyPlaying, setStoryPlaying] = useState(false);
+
+  const storyActive = storyIndex !== null;
 
   const handleFocusChange = useCallback((next: SceneFocus) => {
-    setTourPlaying(false);
+    setStoryIndex(null);
+    setStoryPlaying(false);
     setFocus(next);
   }, []);
 
-  const toggleTour = useCallback(() => {
-    setTourPlaying((playing) => {
-      if (playing) return false;
+  const gotoStep = useCallback((index: number, autoplay: boolean) => {
+    const clamped = Math.max(0, Math.min(STORY_STEPS.length - 1, index));
+    setStoryIndex(clamped);
+    setStoryPlaying(autoplay && clamped < STORY_STEPS.length - 1);
+    setFocus(STORY_STEPS[clamped].focus);
+  }, []);
 
-      setFocus((current) => {
-        if (current.kind === "faculty") return current;
-        return { kind: "faculty", id: FACULTY_TOUR_ORDER[0] };
-      });
-      return true;
-    });
+  const exitStory = useCallback(() => {
+    setStoryIndex(null);
+    setStoryPlaying(false);
+  }, []);
+
+  // Auto-advance while playing; gotoStep stops playback at the final step
+  useEffect(() => {
+    if (!storyPlaying || storyIndex === null) return;
+    const timer = window.setTimeout(() => gotoStep(storyIndex + 1, true), STORY_STEP_MS);
+    return () => window.clearTimeout(timer);
+  }, [storyPlaying, storyIndex, gotoStep]);
+
+  // Deep links: read ?focus= once after mount, keep it in sync afterwards
+  useEffect(() => {
+    const initial = parseFocus(new URLSearchParams(window.location.search).get("focus"));
+    if (!initial) return;
+    const timer = window.setTimeout(() => setFocus(initial), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!tourPlaying) return;
-
-    const timer = window.setInterval(() => {
-      setFocus((current) => {
-        const index =
-          current.kind === "faculty"
-            ? FACULTY_TOUR_ORDER.indexOf(current.id)
-            : -1;
-        const nextIndex = index < 0 ? 0 : (index + 1) % FACULTY_TOUR_ORDER.length;
-        return { kind: "faculty", id: FACULTY_TOUR_ORDER[nextIndex] };
-      });
-    }, FACULTY_TOUR_STEP_MS);
-
-    return () => window.clearInterval(timer);
-  }, [tourPlaying]);
+    const url = new URL(window.location.href);
+    if (focus.kind === "overview") {
+      url.searchParams.delete("focus");
+    } else {
+      url.searchParams.set("focus", serializeFocus(focus));
+    }
+    window.history.replaceState(null, "", url);
+  }, [focus]);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       <main className="relative min-w-0 flex-1">
-        <CognitiveScene focus={focus} tourPlaying={tourPlaying} />
-        <FacultyTourBar focus={focus} playing={tourPlaying} onTogglePlay={toggleTour} />
+        <CognitiveScene focus={focus} tourPlaying={storyPlaying} />
+        {!storyActive && <MobileInfoSheet focus={focus} />}
+        {!storyActive && (
+          <FacultyTourBar
+            focus={focus}
+            onTogglePlay={() => gotoStep(0, true)}
+            onOverview={() => handleFocusChange({ kind: "overview" })}
+          />
+        )}
+        {storyIndex !== null && (
+          <StoryCaption
+            step={STORY_STEPS[storyIndex]}
+            index={storyIndex}
+            playing={storyPlaying}
+            onNext={() => gotoStep(storyIndex + 1, false)}
+            onBack={() => gotoStep(storyIndex - 1, false)}
+            onTogglePlay={() => setStoryPlaying((p) => !p)}
+            onClose={exitStory}
+          />
+        )}
       </main>
       <div className="hidden w-[380px] shrink-0 lg:block">
         <LegendPanel focus={focus} onFocusChange={handleFocusChange} />

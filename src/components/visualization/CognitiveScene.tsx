@@ -7,6 +7,7 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import { SensationLayer } from "./SensationLayer";
 import { CogitativeZone, MemoryZone } from "./MiddleZones";
 import { ConceptualSpaceLayer } from "./ConceptualSpaceLayer";
+import { PorphyryTree } from "./PorphyryTree";
 import { IntellectLayer } from "./IntellectLayer";
 import { FlowParticles } from "./FlowParticles";
 import { LayerBoundaries } from "./LayerBoundaries";
@@ -88,12 +89,15 @@ function SceneContent({
       <SensationLayer />
       <CogitativeZone />
       <ConceptualSpaceLayer />
+      <PorphyryTree />
       <MemoryZone />
       <IntellectLayer />
       <InterLayerArrows />
       <FlowParticles />
 
-      <ActiveFocusIndicator focus={focus} tourPlaying={tourPlaying} />
+      {focus.kind !== "overview" && (
+        <ActiveFocusIndicator focus={focus} tourPlaying={tourPlaying} />
+      )}
 
       <CameraFocusController
         focus={focus}
