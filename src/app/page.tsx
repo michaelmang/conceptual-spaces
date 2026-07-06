@@ -1,108 +1,137 @@
-"use client";
-
-import { useCallback, useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import { LegendPanel } from "@/components/ui/LegendPanel";
-import { FacultyTourBar } from "@/components/ui/FacultyTourBar";
-import { StoryCaption } from "@/components/ui/StoryCaption";
-import { MobileInfoSheet } from "@/components/ui/MobileInfoSheet";
+import type { Metadata } from "next";
+import { HomeClient } from "./HomeClient";
+import { FACULTIES, LAYER_ZONES } from "@/lib/cognitive-model";
+import { serializeFocus } from "@/lib/camera-focus";
+import { STORY_STEPS } from "@/lib/story";
 import {
-  parseFocus,
-  serializeFocus,
-  type SceneFocus,
-} from "@/lib/camera-focus";
-import { STORY_STEPS, STORY_STEP_MS } from "@/lib/story";
+  describeParams,
+  HOOK,
+  PAPER_AUTHOR,
+  PAPER_TITLE,
+  PAPER_URL,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/site";
 
-const CognitiveScene = dynamic(
-  () =>
-    import("@/components/visualization/CognitiveScene").then((m) => m.CognitiveScene),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-full w-full items-center justify-center bg-[#0a0e1a]">
-        <p className="text-sm text-white/40">Loading cognitive architecture…</p>
-      </div>
-    ),
-  },
-);
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const view = describeParams(await searchParams);
+
+  const og = new URLSearchParams();
+  if (view.stepIndex !== null) {
+    og.set("step", String(view.stepIndex + 1));
+  } else if (view.focus.kind !== "overview") {
+    og.set("focus", serializeFocus(view.focus));
+  }
+  const image = og.size > 0 ? `/og?${og}` : "/og";
+
+  return {
+    title: view.title,
+    description: view.description,
+    alternates: { canonical: "/" },
+    openGraph: {
+      title: view.title,
+      description: view.description,
+      url: "/",
+      siteName: SITE_NAME,
+      type: "website",
+      images: [{ url: image, width: 1200, height: 630, alt: view.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: view.title,
+      description: view.description,
+      images: [image],
+    },
+  };
+}
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: SITE_NAME,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      applicationCategory: "EducationalApplication",
+      operatingSystem: "Web browser",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      author: { "@type": "Person", name: PAPER_AUTHOR },
+      about: { "@id": `${SITE_URL}/#paper` },
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": `${SITE_URL}/#paper`,
+      headline: PAPER_TITLE,
+      author: { "@type": "Person", name: PAPER_AUTHOR },
+      url: PAPER_URL,
+      datePublished: "2026-06-05",
+      abstract:
+        "Peter Gärdenfors' conceptual spaces framework proposes a geometric model of cognition. This paper argues that Gärdenfors has independently recovered the cognitive structure of Aristotle, grounds the framework ontologically in the Aristotelian-Thomistic hierarchy, and draws implications for LLM architecture.",
+      keywords:
+        "conceptual spaces, Gärdenfors, Aristotle, Aquinas, cogitative power, cognitive science, philosophy of AI, LLM",
+    },
+  ],
+};
 
 export default function Home() {
-  const [focus, setFocus] = useState<SceneFocus>({ kind: "overview" });
-  const [storyIndex, setStoryIndex] = useState<number | null>(null);
-  const [storyPlaying, setStoryPlaying] = useState(false);
-
-  const storyActive = storyIndex !== null;
-
-  const handleFocusChange = useCallback((next: SceneFocus) => {
-    setStoryIndex(null);
-    setStoryPlaying(false);
-    setFocus(next);
-  }, []);
-
-  const gotoStep = useCallback((index: number, autoplay: boolean) => {
-    const clamped = Math.max(0, Math.min(STORY_STEPS.length - 1, index));
-    setStoryIndex(clamped);
-    setStoryPlaying(autoplay && clamped < STORY_STEPS.length - 1);
-    setFocus(STORY_STEPS[clamped].focus);
-  }, []);
-
-  const exitStory = useCallback(() => {
-    setStoryIndex(null);
-    setStoryPlaying(false);
-  }, []);
-
-  // Auto-advance while playing; gotoStep stops playback at the final step
-  useEffect(() => {
-    if (!storyPlaying || storyIndex === null) return;
-    const timer = window.setTimeout(() => gotoStep(storyIndex + 1, true), STORY_STEP_MS);
-    return () => window.clearTimeout(timer);
-  }, [storyPlaying, storyIndex, gotoStep]);
-
-  // Deep links: read ?focus= once after mount, keep it in sync afterwards
-  useEffect(() => {
-    const initial = parseFocus(new URLSearchParams(window.location.search).get("focus"));
-    if (!initial) return;
-    const timer = window.setTimeout(() => setFocus(initial), 0);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (focus.kind === "overview") {
-      url.searchParams.delete("focus");
-    } else {
-      url.searchParams.set("focus", serializeFocus(focus));
-    }
-    window.history.replaceState(null, "", url);
-  }, [focus]);
-
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
-      <main className="relative min-w-0 flex-1">
-        <CognitiveScene focus={focus} tourPlaying={storyPlaying} />
-        {!storyActive && <MobileInfoSheet focus={focus} />}
-        {!storyActive && (
-          <FacultyTourBar
-            focus={focus}
-            onTogglePlay={() => gotoStep(0, true)}
-            onOverview={() => handleFocusChange({ kind: "overview" })}
-          />
-        )}
-        {storyIndex !== null && (
-          <StoryCaption
-            step={STORY_STEPS[storyIndex]}
-            index={storyIndex}
-            playing={storyPlaying}
-            onNext={() => gotoStep(storyIndex + 1, false)}
-            onBack={() => gotoStep(storyIndex - 1, false)}
-            onTogglePlay={() => setStoryPlaying((p) => !p)}
-            onClose={exitStory}
-          />
-        )}
-      </main>
-      <div className="hidden w-[380px] shrink-0 lg:block">
-        <LegendPanel focus={focus} onFocusChange={handleFocusChange} />
-      </div>
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      {/* Crawlable summary of an otherwise WebGL-only page (also the screen-reader path) */}
+      <section className="sr-only">
+        <h1>Conceptual Spaces — an interactive 3D map of the mind</h1>
+        <p>{HOOK}</p>
+        <p>
+          Peter Gärdenfors&apos; conceptual spaces framework models concepts as
+          geometry: quality dimensions form domains, concepts are convex regions,
+          typicality is distance from a prototype. This visualization places that
+          framework in the middle of the Aristotelian-Thomistic cognitive
+          hierarchy — formal reception through the senses below it, the
+          immaterial intellect above it — showing how the classical psychology
+          fills the two gaps the modern framework leaves open. It is the
+          interactive companion to the paper{" "}
+          <a href={PAPER_URL}>
+            {PAPER_TITLE} by {PAPER_AUTHOR}
+          </a>
+          .
+        </p>
+        <h2>The three layers</h2>
+        <ul>
+          {Object.values(LAYER_ZONES).map((zone) => (
+            <li key={zone.label}>
+              {zone.label}: {zone.summary}
+            </li>
+          ))}
+        </ul>
+        <h2>The eight stations</h2>
+        <ul>
+          {FACULTIES.map((f) => (
+            <li key={f.id}>
+              {f.label} ({f.subtitle}): {f.description}
+            </li>
+          ))}
+        </ul>
+        <h2>The story</h2>
+        <ol>
+          {STORY_STEPS.map((s) => (
+            <li key={s.title}>
+              {s.title}: {s.narration}
+            </li>
+          ))}
+        </ol>
+      </section>
+      <HomeClient />
+    </>
   );
 }

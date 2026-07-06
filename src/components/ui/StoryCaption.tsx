@@ -1,6 +1,8 @@
 "use client";
 
 import { STORY_STEPS, type StoryStep } from "@/lib/story";
+import { ShareMenu } from "@/components/ui/ShareMenu";
+import { PAPER_URL } from "@/lib/site";
 
 export function StoryCaption({
   step,
@@ -56,14 +58,27 @@ export function StoryCaption({
           >
             {playing ? "⏸" : "▶"}
           </button>
-          <button
-            type="button"
-            onClick={onNext}
-            disabled={index === total - 1}
-            className="rounded-md bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15 disabled:opacity-30"
-          >
-            Next ›
-          </button>
+          {index < total - 1 ? (
+            <button
+              type="button"
+              onClick={onNext}
+              className="rounded-md bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/15"
+            >
+              Next ›
+            </button>
+          ) : (
+            <a
+              href={PAPER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-[#0a0e1a] transition-colors hover:bg-white/90"
+            >
+              Read the paper ↗
+            </a>
+          )}
+          <div className="ml-auto">
+            <ShareMenu focus={step.focus} stepIndex={index} />
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import {
+  PAPER_AUTHOR,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+} from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,28 +19,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: "Cognitive Architecture — Conceptual Spaces Visualization",
-  description:
-    "Interactive 3D visualization of Aristotelian-Thomistic faculty psychology unified with Gärdenfors' conceptual spaces framework",
-  openGraph: {
-    title: "Conceptual Spaces",
-    description:
-      "Interactive 3D visualization of Aristotelian-Thomistic faculty psychology unified with Gärdenfors' conceptual spaces framework",
-    type: "website",
-    siteName: "Conceptual Spaces",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Conceptual Spaces",
-    description:
-      "Interactive 3D visualization of cognitive architecture and conceptual spaces",
-  },
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  authors: [{ name: PAPER_AUTHOR, url: "https://michaelmangialardi.substack.com" }],
+  creator: PAPER_AUTHOR,
+  keywords: [
+    "conceptual spaces",
+    "Gärdenfors",
+    "Aristotle",
+    "Aquinas",
+    "cognitive science",
+    "cogitative power",
+    "philosophy of mind",
+    "philosophy of AI",
+    "3D visualization",
+    "faculty psychology",
+  ],
+  category: "science",
 };
 
 export default function RootLayout({

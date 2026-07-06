@@ -5,6 +5,8 @@ import {
   FACULTY_TOUR_ORDER,
   type SceneFocus,
 } from "@/lib/camera-focus";
+import { ShareMenu } from "@/components/ui/ShareMenu";
+import { PAPER_URL } from "@/lib/site";
 
 export function FacultyTourBar({
   focus,
@@ -45,6 +47,16 @@ export function FacultyTourBar({
           <span aria-hidden className="text-sm leading-none">▶</span>
           Story
         </button>
+        <ShareMenu focus={focus} />
+        <a
+          href={PAPER_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Read the paper this visualization accompanies"
+          className="flex items-center gap-2 rounded-md bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          Paper ↗
+        </a>
         {faculty && (
           <div className="hidden border-l border-white/10 pl-2 sm:block">
             <p className="text-[10px] uppercase tracking-wider text-white/40">

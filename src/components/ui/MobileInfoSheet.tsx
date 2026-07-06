@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FACULTIES, LAYER_ZONES } from "@/lib/cognitive-model";
 import type { SceneFocus } from "@/lib/camera-focus";
+import { PAPER_URL } from "@/lib/site";
 
 function focusInfo(focus: SceneFocus): { title: string; body: string } {
   if (focus.kind === "overview") {
@@ -25,11 +26,11 @@ export function MobileInfoSheet({ focus }: { focus: SceneFocus }) {
   const { title, body } = focusInfo(focus);
 
   return (
-    <div className="absolute inset-x-0 top-0 z-20 lg:hidden">
+    <div className="absolute inset-x-0 top-0 z-20 border-b border-white/10 bg-black/70 backdrop-blur-md lg:hidden">
       <button
         type="button"
         onClick={() => setCollapsed((c) => !c)}
-        className="block w-full border-b border-white/10 bg-black/70 px-4 py-2.5 text-left backdrop-blur-md"
+        className="block w-full px-4 pt-2.5 pb-1 text-left"
       >
         <div className="flex items-center justify-between gap-2">
           <p className="truncate text-sm font-semibold text-white">{title}</p>
@@ -41,6 +42,18 @@ export function MobileInfoSheet({ focus }: { focus: SceneFocus }) {
           <p className="mt-1 text-xs leading-relaxed text-white/55">{body}</p>
         )}
       </button>
+      {!collapsed ? (
+        <a
+          href={PAPER_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block px-4 pb-2.5 text-xs font-medium text-[#4a9eff]"
+        >
+          Read the paper ↗
+        </a>
+      ) : (
+        <div className="pb-1.5" />
+      )}
     </div>
   );
 }

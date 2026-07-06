@@ -9,6 +9,7 @@ import {
 } from "@/lib/cognitive-model";
 import { TYPICALITY_LEGEND } from "@/lib/gardenfors-figures";
 import type { LayerZoneId, SceneFocus } from "@/lib/camera-focus";
+import { PAPER_AUTHOR, PAPER_URL } from "@/lib/site";
 
 const LAYER_IDS = Object.keys(LAYER_ZONES) as LayerZoneId[];
 
@@ -42,6 +43,14 @@ export function LegendPanel({
           Geometric visualization of faculty psychology unified with Gärdenfors&apos;
           conceptual spaces
         </p>
+        <a
+          href={PAPER_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-block text-xs font-medium text-[#4a9eff] transition-colors hover:text-[#7ab8ff]"
+        >
+          Read the paper ↗
+        </a>
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 py-4">
@@ -235,8 +244,17 @@ export function LegendPanel({
         </section>
       </div>
 
-      <footer className="border-t border-white/10 px-5 py-3 text-[10px] text-white/30">
-        Use Orbit / Pan controls (bottom-left) · Scroll to zoom
+      <footer className="flex items-center justify-between gap-2 border-t border-white/10 px-5 py-3 text-[10px] text-white/30">
+        <span>Use Orbit / Pan controls (bottom-left) · Scroll to zoom</span>
+        <a
+          href={PAPER_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="shrink-0 text-white/40 transition-colors hover:text-white/70"
+          title={`Beyond and Below Cognitive Space — ${PAPER_AUTHOR}`}
+        >
+          Paper ↗
+        </a>
       </footer>
     </aside>
   );
