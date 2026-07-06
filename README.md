@@ -13,6 +13,7 @@ Companion to the paper: [Beyond and Below Cognitive Space: A Framework for Perfe
 - **Story mode** — a 10-step narrated walkthrough of the paper's argument, from formal reception in the senses up to the immaterial intellect
 - **Deep links** — every view is shareable (`?step=7`, `?focus=faculty:intellect`), each with its own server-rendered social card (`/og?step=7`)
 - **Eight stations** — sensible reality, external senses, common sense, imagination, cogitative power, conceptual space, memory, intellect — each with camera framing and commentary
+- **Reading guide** (`/guide`) — the argument station by station with the paper's sources and further reading, cross-linked with the 3D views
 
 Built with Next.js, React Three Fiber, and Three.js.
 

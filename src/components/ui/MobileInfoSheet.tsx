@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FACULTIES, LAYER_ZONES } from "@/lib/cognitive-model";
 import type { SceneFocus } from "@/lib/camera-focus";
+import { GUIDE_PATH } from "@/lib/reading-guide";
 import { PAPER_URL } from "@/lib/site";
 
 function focusInfo(focus: SceneFocus): { title: string; body: string } {
@@ -43,14 +45,22 @@ export function MobileInfoSheet({ focus }: { focus: SceneFocus }) {
         )}
       </button>
       {!collapsed ? (
-        <a
-          href={PAPER_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block px-4 pb-2.5 text-xs font-medium text-[#4a9eff]"
-        >
-          Read the paper ↗
-        </a>
+        <div className="flex items-center gap-4 px-4 pb-2.5">
+          <a
+            href={PAPER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-medium text-[#4a9eff]"
+          >
+            Read the paper ↗
+          </a>
+          <Link
+            href={GUIDE_PATH}
+            className="text-xs font-medium text-[#6ecf8a]"
+          >
+            Reading guide →
+          </Link>
+        </div>
       ) : (
         <div className="pb-1.5" />
       )}

@@ -7,6 +7,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     { url: SITE_URL, lastModified, changeFrequency: "weekly", priority: 1 },
+    {
+      url: `${SITE_URL}/guide`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
     ...Object.keys(LAYER_ZONES).map((id) => ({
       url: `${SITE_URL}/?focus=layer:${id}`,
       lastModified,

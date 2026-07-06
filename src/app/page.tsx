@@ -104,7 +104,8 @@ export default function Home() {
           <a href={PAPER_URL}>
             {PAPER_TITLE} by {PAPER_AUTHOR}
           </a>
-          .
+          . A station-by-station <a href="/guide">reading guide with sources</a>{" "}
+          accompanies both.
         </p>
         <h2>The three layers</h2>
         <ul>

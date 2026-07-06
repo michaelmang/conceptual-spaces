@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   FACULTIES,
   PREDICABLES,
@@ -7,6 +8,7 @@ import {
   LAYER_ZONES,
   PIPELINE_STATIONS,
 } from "@/lib/cognitive-model";
+import { GUIDE_PATH, GUIDED_FACULTY_IDS } from "@/lib/reading-guide";
 import { TYPICALITY_LEGEND } from "@/lib/gardenfors-figures";
 import type { LayerZoneId, SceneFocus } from "@/lib/camera-focus";
 import { PAPER_AUTHOR, PAPER_URL } from "@/lib/site";
@@ -43,14 +45,22 @@ export function LegendPanel({
           Geometric visualization of faculty psychology unified with Gärdenfors&apos;
           conceptual spaces
         </p>
-        <a
-          href={PAPER_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 inline-block text-xs font-medium text-[#4a9eff] transition-colors hover:text-[#7ab8ff]"
-        >
-          Read the paper ↗
-        </a>
+        <div className="mt-2 flex items-center gap-3">
+          <a
+            href={PAPER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-medium text-[#4a9eff] transition-colors hover:text-[#7ab8ff]"
+          >
+            Read the paper ↗
+          </a>
+          <Link
+            href={GUIDE_PATH}
+            className="text-xs font-medium text-[#6ecf8a] transition-colors hover:text-[#8fdfa8]"
+          >
+            Reading guide →
+          </Link>
+        </div>
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 py-4">
@@ -174,6 +184,14 @@ export function LegendPanel({
             <p className="mt-2 text-sm leading-relaxed text-white/70">
               {faculty.description}
             </p>
+            {GUIDED_FACULTY_IDS.has(faculty.id) && (
+              <Link
+                href={`${GUIDE_PATH}#${faculty.id}`}
+                className="mt-2 inline-block text-xs font-medium text-[#6ecf8a] transition-colors hover:text-[#8fdfa8]"
+              >
+                Sources for this station →
+              </Link>
+            )}
           </section>
         )}
 

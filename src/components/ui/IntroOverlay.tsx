@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { BRAND } from "@/lib/brand";
+import { GUIDE_PATH } from "@/lib/reading-guide";
 import { HOOK, PAPER_AUTHOR, PAPER_URL } from "@/lib/site";
 
 /** First-visit hero: states the claim, then routes to story / free explore / paper */
@@ -62,8 +64,16 @@ export function IntroOverlay({
           </a>
         </div>
 
-        <p className="mt-5 border-t border-white/10 pt-3 text-[11px] text-white/30">
-          Companion to “Beyond and Below Cognitive Space” by {PAPER_AUTHOR}
+        <p className="mt-5 flex items-baseline justify-between gap-2 border-t border-white/10 pt-3 text-[11px] text-white/30">
+          <span>
+            Companion to “Beyond and Below Cognitive Space” by {PAPER_AUTHOR}
+          </span>
+          <Link
+            href={GUIDE_PATH}
+            className="shrink-0 font-medium text-white/40 transition-colors hover:text-white/70"
+          >
+            Reading guide →
+          </Link>
         </p>
       </div>
     </div>

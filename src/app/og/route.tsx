@@ -40,6 +40,17 @@ interface CardView {
 }
 
 function resolveView(searchParams: URLSearchParams): CardView {
+  if (searchParams.get("view") === "guide") {
+    return {
+      eyebrow: "THE READING GUIDE",
+      title: "Read your way up the tower.",
+      description:
+        "Station-by-station sources for the paper — Aristotle and Aquinas below, Gärdenfors in the middle, the intellect above, GPT-2 as coda.",
+      accent: "#6ecf8a",
+      activeLayer: null,
+    };
+  }
+
   const view = describeParams({
     focus: searchParams.get("focus") ?? undefined,
     step: searchParams.get("step") ?? undefined,
