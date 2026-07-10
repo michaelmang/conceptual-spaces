@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import {
   PAPER_AUTHOR,
@@ -53,6 +54,7 @@ export default function RootLayout({
     >
       <body className="h-full overflow-hidden bg-[#0a0e1a] font-sans text-white">
         {children}
+        <Analytics />
       </body>
     </html>
   );
